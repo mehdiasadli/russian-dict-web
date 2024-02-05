@@ -1,5 +1,12 @@
 import { ActionIcon, Card, Center, Flex, MantineColor } from '@mantine/core';
-import { IconHome, IconLogout, IconMoon, IconSun, IconUser } from '@tabler/icons-react';
+import {
+  IconDashboard,
+  IconHome,
+  IconLogout,
+  IconMoon,
+  IconSun,
+  IconUser,
+} from '@tabler/icons-react';
 import { glassify } from '../resources/glass';
 import { useUser } from '../store/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +18,7 @@ type NavL = {
   onClick: () => void;
   color?: MantineColor;
   icon: React.ReactElement;
+  adminOnly?: boolean;
 };
 
 const Navbar = () => {
@@ -32,6 +40,14 @@ const Navbar = () => {
         icon: <IconUser size={18} />,
         onClick: () => {
           navigate('/profile');
+        },
+      },
+      {
+        title: 'Dashboard',
+        icon: <IconDashboard size={18} />,
+        adminOnly: true,
+        onClick: () => {
+          navigate('/dashboard');
         },
       },
       {
