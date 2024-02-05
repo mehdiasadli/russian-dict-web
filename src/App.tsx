@@ -19,6 +19,7 @@ import ProfileResults from './pages/ProfileResults.page';
 
 dayjs.extend(relativeTime);
 
+
 const App = () => {
   const { token } = useUser();
 
