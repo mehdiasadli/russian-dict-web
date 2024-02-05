@@ -21,10 +21,7 @@ import Dashboard from './pages/Dashboard.page';
 dayjs.extend(relativeTime);
 
 const App = () => {
-  const {
-    token,
-    user: { isAdmin },
-  } = useUser();
+  const { token, user } = useUser();
 
   return (
     <AppRouter>
@@ -39,7 +36,7 @@ const App = () => {
             </Route>
             <Route path='/' element={token ? <HomeLayout /> : <Navigate to='/auth' />}>
               <Route index element={<HomePage />} />
-              <Route path='dashboard' element={isAdmin ? <Dashboard /> : <Navigate to='/' />} />
+              <Route path='dashboard' element={user?.isAdmin ? <Dashboard /> : <Navigate to='/' />} />
               <Route path='profile' element={<ProfilePage />}>
                 <Route index element={<ProfileWords />} />
                 <Route path='learning' element={<ProfileLearning />} />
