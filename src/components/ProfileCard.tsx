@@ -49,7 +49,7 @@ const ProfileCard = (props?: Omit<CardProps, 'children'>) => {
             </Group>
             <Group spacing={5}>
               <IconCalendar size={14} />
-              <Text color='dimmed' fz={14}>
+            <Text color='dimmed' fz={14}>
                 Joined {dayjs(user.createdAt).fromNow()}
               </Text>
             </Group>

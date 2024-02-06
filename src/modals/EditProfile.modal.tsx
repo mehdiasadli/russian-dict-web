@@ -3,9 +3,20 @@ import { useUser } from '../store/useAuth';
 import { useForm, zodResolver } from '@mantine/form';
 import { EditUserSchema, TEditUserSchema } from '../schemas/user.schema';
 import { useUpdateUser } from '../services/user.service';
+import { IUser } from '../resources/types';
 
-const EditProfile = ({ opened, close }: { opened: boolean; close: () => void }) => {
-  const { user } = useUser();
+const EditProfile = ({
+  opened,
+  close,
+  updateUser,
+}: {
+  opened: boolean;
+  close: () => void;
+  updateUser?: IUser;
+}) => {
+  const { user: currentUser } = useUser();
+  const user = updateUser ?? currentUser;
+
   const form = useForm<TEditUserSchema>({
     initialValues: {
       firstName: user.firstName,
@@ -13,7 +24,7 @@ const EditProfile = ({ opened, close }: { opened: boolean; close: () => void }) 
     },
     validate: zodResolver(EditUserSchema),
   });
-  const { mutate, isPending } = useUpdateUser(close);
+  const { mutate, isPending } = useUpdateUser(close, updateUser);
 
   const onSuccess = (values: TEditUserSchema) => {
     mutate(values);

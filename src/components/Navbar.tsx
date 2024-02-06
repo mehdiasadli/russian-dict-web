@@ -22,7 +22,7 @@ type NavL = {
 };
 
 const Navbar = () => {
-  const { logout } = useUser();
+  const { logout, user } = useUser();
   const { scheme, toggle } = usePreferences();
   const navigate = useNavigate();
 
@@ -83,17 +83,19 @@ const Navbar = () => {
         }}
       >
         <Flex align='center' justify='center' gap={10}>
-          {navs.map((nav) => (
-            <ActionIcon
-              key={nav.title}
-              variant='subtle'
-              color={nav.color ?? 'teal'}
-              size='lg'
-              onClick={nav.onClick}
-            >
-              {nav.icon}
-            </ActionIcon>
-          ))}
+          {navs
+            .filter((nav) => (!nav.adminOnly ? true : user.isAdmin))
+            .map((nav) => (
+              <ActionIcon
+                key={nav.title}
+                variant='subtle'
+                color={nav.color ?? 'teal'}
+                size='lg'
+                onClick={nav.onClick}
+              >
+                {nav.icon}
+              </ActionIcon>
+            ))}
         </Flex>
       </Card>
     </Center>

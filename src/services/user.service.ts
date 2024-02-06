@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { TEditUserSchema, TRegisterSchema } from '../schemas/user.schema';
 import { ApiError, ICommonWord, IUser } from '../resources/types';
 import { useToast } from '../hooks/useToast';
@@ -70,9 +70,12 @@ export const useManage = (removing?: boolean) => {
   });
 };
 
-export const useUpdateUser = (close: () => void) => {
-  const { user, updateUser } = useUser();
+export const useUpdateUser = (close: () => void, userToUpdate?: IUser) => {
+  const { user: currentUser, updateUser } = useUser();
   const { error, success } = useToast();
+  const queryClient = useQueryClient();
+
+  const user = userToUpdate ?? currentUser;
 
   return useMutation<IUser, AxiosError<ApiError>, TEditUserSchema>({
     mutationKey: ['update-user'],
@@ -82,8 +85,47 @@ export const useUpdateUser = (close: () => void) => {
       error(err);
     },
     onSuccess: (data) => {
-      updateUser(data);
+      if (!userToUpdate) {
+        updateUser(data);
+      }
+
+      queryClient.refetchQueries({
+        queryKey: ['users'],
+      });
+
       success('User updated successfully');
+      close();
+    },
+  });
+};
+
+export const useUsers = () => {
+  return useQuery<IUser[]>({
+    queryKey: ['users'],
+    queryFn: () => api.get('/').then((res) => res.data),
+    retry: 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchIntervalInBackground: false,
+  });
+};
+
+export const useDeleteUser = (close: () => void) => {
+  const queryClient = useQueryClient();
+  const { success, error } = useToast();
+
+  return useMutation<boolean, AxiosError<ApiError>, { id: string; name: string }>({
+    mutationKey: ['delete-user'],
+    mutationFn: ({ id }) => api.delete('/' + id).then((res) => res.data),
+    retry: 0,
+    onError: (err) => {
+      error(err);
+    },
+    onSuccess: (_, vars) => {
+      success(`${vars.name} deleted successfully`);
+      queryClient.refetchQueries({
+        queryKey: ['users'],
+      });
       close();
     },
   });
